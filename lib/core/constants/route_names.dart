@@ -36,6 +36,7 @@ abstract class AppRoutes {
   static const String stylistAndChairSelection = '/checkout/stylist-chair';
   static const String bookingSummary = '/checkout/summary';
   static const String payment = '/checkout/payment';
+  static const String qrPayment = '/checkout/qr-payment';
   static const String bookingConfirmation = '/checkout/confirmation';
 
   // Bookings & Tracking

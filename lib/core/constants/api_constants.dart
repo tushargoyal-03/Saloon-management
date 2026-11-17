@@ -1,7 +1,7 @@
 abstract class ApiConstants {
   // Base URL (overridden dynamically by AppConfig)
   static const String liveBaseUrl = 'http://157.20.51.180:5004';
-  static const String localBaseUrl = 'http://localhost:5000';
+  // static const String localBaseUrl = 'http://localhost:5000';
   static const String defaultBaseUrl = liveBaseUrl;
 
   // Timeouts
@@ -266,13 +266,14 @@ abstract class ApiConstants {
   static const String paymentMethods = '/api/customer/payments/methods';
 
   //. Create Payment
-  static const String createPaymentOrder =
-      '/api/customer/payments/create-order';
+  static const String createPaymentOrder = '/api/payments/jigropay/create';
 
-  static const String verifyPayment = '/api/customer/payments/verify';
+  //. Check Payment Status (GET /api/payments/jigropay/check-status?txnId={txnId})
+  static const String checkPaymentStatus =
+      '/api/payments/jigropay/check-status';
+  static const String verifyPayment = checkPaymentStatus;
 
-  static const String processPayment = '/payments/process';
-  static const String createPayment = createPaymentOrder;
+  // static const String createPayment = createPaymentOrder;
   static String paymentById(String id) => '/payments/$id';
 
   static const String reviews = '/reviews';

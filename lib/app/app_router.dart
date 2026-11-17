@@ -39,6 +39,9 @@ import '../features/bookings/presentation/screens/booking_details_screen.dart';
 import '../features/bookings/presentation/screens/my_bookings_screen.dart';
 import '../features/bookings/presentation/screens/stylist_and_chair_selection_screen.dart';
 import '../features/payment/presentation/screens/payment_screen.dart';
+import '../features/payment/presentation/screens/qr_payment_screen.dart';
+import '../features/payment/data/models/create_payment_model.dart';
+import '../features/payment/data/models/payment_method_model.dart';
 import '../features/auth/presentation/screens/edit_profile_screen.dart';
 import '../features/branches/presentation/screens/branch_details_screen.dart';
 import '../features/notifications/presentation/screens/notifications_screen.dart';
@@ -239,6 +242,20 @@ abstract class AppRouter {
             settings: settings,
             builder: (_) => PaymentScreen(
               bookingSummary: args?['bookingSummary'] as BookingSummaryModel?,
+            ),
+          );
+        }
+
+      case AppRoutes.qrPayment:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => QrPaymentScreen(
+              paymentData: args!['paymentData'] as Data,
+              summary: args['summary'] as BookingSummaryModel,
+              selectedMethod: args['selectedMethod'] as PaymentMethodModel,
+              selectedProduct: args['selectedProduct'] as ConsumableProduct?,
             ),
           );
         }

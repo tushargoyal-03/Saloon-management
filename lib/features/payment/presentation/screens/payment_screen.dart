@@ -7,9 +7,12 @@ import 'package:prop_crm/core/widgets/app_button.dart';
 import 'package:prop_crm/core/widgets/app_error_view.dart';
 import 'package:prop_crm/core/widgets/app_loading_indicator.dart';
 import 'package:prop_crm/core/widgets/custom_app_bar.dart';
+import 'package:prop_crm/features/auth/presentation/providers/auth_provider.dart';
 import 'package:prop_crm/features/booking_summary/data/models/booking_summary_model.dart';
 import 'package:prop_crm/features/booking_summary/presentation/providers/booking_summary_provider.dart';
 import 'package:prop_crm/features/bookings/presentation/providers/booking_provider.dart';
+import 'package:prop_crm/features/payment/data/models/create_payment_model.dart';
+import 'package:prop_crm/features/payment/data/models/create_payment_request_model.dart';
 import 'package:prop_crm/features/payment/data/models/payment_method_model.dart';
 import 'package:provider/provider.dart';
 
@@ -55,6 +58,36 @@ class _PaymentScreenState extends State<PaymentScreen> {
     paymentProvider.loadPaymentMethods(forceRefresh: true);
   }
 
+  Future<CreatePayment?> _confirmPayment(BookingSummaryModel summary) async {
+    final paymentProvider = context.read<PaymentProvider>();
+    final authProvider = context.read<AuthProvider>();
+    final user = authProvider.currentUser;
+
+    // Use authentic customer profile data; never hardcode
+    final customerName = (user?.name != null && user!.name.trim().isNotEmpty)
+        ? user.name.trim()
+        : 'Customer';
+    final customerPhone = (user?.phone != null && user!.phone.trim().isNotEmpty)
+        ? user.phone.trim()
+        : (authProvider.currentPhone ?? '');
+    final customerEmail = (user?.email != null && user!.email.trim().isNotEmpty)
+        ? user.email.trim()
+        : (authProvider.currentEmail ?? '');
+
+    // Amount strictly derived from the BookingSummaryModel source of truth
+    final payableAmount = summary.pricing.totalAmount;
+
+    final request = CreatePaymentRequest(
+      amount: payableAmount,
+      name: customerName,
+      mobileNo: customerPhone,
+      emailAddress: customerEmail,
+      remark: 'Booking for ${summary.service.name}',
+    );
+
+    return await paymentProvider.createPaymentOrder(request: request);
+  }
+
   void _handleContinue() {
     final paymentProvider = context.read<PaymentProvider>();
     final summary = paymentProvider.bookingSummary;
@@ -75,18 +108,35 @@ class _PaymentScreenState extends State<PaymentScreen> {
     PaymentMethodModel selectedMethod,
   ) {
     final bookingProvider = context.read<BookingProvider>();
+    final paymentProvider = context.read<PaymentProvider>();
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      isDismissible: !bookingProvider.isCreating,
-      enableDrag: !bookingProvider.isCreating,
+      isDismissible: !bookingProvider.isCreating &&
+          !paymentProvider.createPaymentState.isLoading,
+      enableDrag: !bookingProvider.isCreating &&
+          !paymentProvider.createPaymentState.isLoading,
       builder: (bottomSheetContext) {
-        return ChangeNotifierProvider<BookingProvider>.value(
-          value: bookingProvider,
-          child: Consumer<BookingProvider>(
-            builder: (ctx, bp, _) {
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider<BookingProvider>.value(
+              value: bookingProvider,
+            ),
+            ChangeNotifierProvider<PaymentProvider>.value(
+              value: paymentProvider,
+            ),
+          ],
+          child: Consumer2<BookingProvider, PaymentProvider>(
+            builder: (ctx, bp, pp, _) {
+              final isBusy = bp.isCreating ||
+                  pp.createPaymentState.isLoading ||
+                  pp.isProcessing;
+
+              final displayError = pp.createPaymentState.errorMessage ??
+                  (bp.hasError ? bp.errorMessage : null);
+
               return Container(
                 decoration: const BoxDecoration(
                   color: AppColors.surface,
@@ -224,7 +274,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       const SizedBox(height: 16),
 
                       // Error message if any
-                      if (bp.hasError && bp.errorMessage != null) ...[
+                      if (displayError != null) ...[
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
@@ -244,7 +294,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  bp.errorMessage!,
+                                  displayError,
                                   style: AppTypography.bodySmall.copyWith(
                                     color: AppColors.error,
                                     fontWeight: FontWeight.w500,
@@ -259,35 +309,72 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                       // Confirm Booking Button
                       AppButton(
-                        text: bp.hasError ? 'Retry' : 'Confirm Booking',
-                        isLoading: bp.isCreating,
-                        onPressed: bp.isCreating
+                        text: (displayError != null)
+                            ? 'Retry'
+                            : (selectedMethod.type.isOnline
+                                ? 'Pay & Confirm Booking'
+                                : 'Confirm Booking'),
+                        isLoading: isBusy,
+                        onPressed: isBusy
                             ? null
                             : () async {
                                 final summaryProvider = context
                                     .read<BookingSummaryProvider>();
-
-                                // Product is optional.
                                 final selectedProduct =
                                     summaryProvider.selectedProduct;
 
-                                final booking = await bp.createBooking(
-                                  summary: summary,
-                                  paymentMethod: selectedMethod,
-                                  selectedProduct: selectedProduct,
-                                );
+                                if (selectedMethod.type.isOnline) {
+                                  // ONLINE PAYMENT FLOW:
+                                  // 1. Call createPaymentOrder via _confirmPayment with real amount and user info
+                                  final paymentResponse =
+                                      await _confirmPayment(summary);
 
-                                if (booking != null && context.mounted) {
-                                  Navigator.of(bottomSheetContext).pop();
+                                  if (!context.mounted) return;
 
-                                  Navigator.of(context).pushNamedAndRemoveUntil(
-                                    AppRoutes.bookingConfirmation,
-                                    (route) =>
-                                        route.settings.name ==
-                                            AppRoutes.mainNav ||
-                                        route.isFirst,
-                                    arguments: {'booking': booking},
+                                  if (paymentResponse != null &&
+                                      paymentResponse.data != null) {
+                                    final data = paymentResponse.data!;
+                                    final txnId = data.txnId;
+
+                                    if (txnId != null &&
+                                        txnId.trim().isNotEmpty) {
+                                      // Dismiss bottom sheet safely
+                                      Navigator.of(bottomSheetContext).pop();
+
+                                      // Navigate to dedicated QR payment screen
+                                      Navigator.of(context).pushNamed(
+                                        AppRoutes.qrPayment,
+                                        arguments: {
+                                          'paymentData': data,
+                                          'summary': summary,
+                                          'selectedMethod': selectedMethod,
+                                          'selectedProduct': selectedProduct,
+                                        },
+                                      );
+                                      return;
+                                    }
+                                  }
+                                } else {
+                                  // OFFLINE PAYMENT FLOW:
+                                  // Preserve existing offline flow completely
+                                  final booking = await bp.createBooking(
+                                    summary: summary,
+                                    paymentMethod: selectedMethod,
+                                    selectedProduct: selectedProduct,
                                   );
+
+                                  if (booking != null && context.mounted) {
+                                    Navigator.of(bottomSheetContext).pop();
+
+                                    Navigator.of(context).pushNamedAndRemoveUntil(
+                                      AppRoutes.bookingConfirmation,
+                                      (route) =>
+                                          route.settings.name ==
+                                              AppRoutes.mainNav ||
+                                          route.isFirst,
+                                      arguments: {'booking': booking},
+                                    );
+                                  }
                                 }
                               },
                       ),

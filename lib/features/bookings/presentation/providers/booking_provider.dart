@@ -269,6 +269,8 @@ class BookingProvider extends ChangeNotifier {
     required BookingSummaryModel summary,
     required PaymentMethodModel paymentMethod,
     ConsumableProduct? selectedProduct,
+    String? transactionId,
+    String? paymentId,
   }) async {
     if (isCreating) return null;
 
@@ -293,6 +295,8 @@ class BookingProvider extends ChangeNotifier {
         paymentMethod: paymentMethod,
         branchId: branchId,
         productId: selectedProduct?.id ?? '',
+        transactionId: transactionId,
+        paymentId: paymentId,
       );
 
       final bookingResponse = await repository.createBooking(

@@ -207,6 +207,12 @@ class AppLoggingInterceptor extends Interceptor {
         'refreshToken',
         'resetToken',
         'otp',
+        'cvv',
+        'pin',
+        'upiPin',
+        'cardNumber',
+        'secret',
+        'clientSecret',
       ]) {
         if (sanitized.containsKey(key)) {
           sanitized[key] = '[PROTECTED]';

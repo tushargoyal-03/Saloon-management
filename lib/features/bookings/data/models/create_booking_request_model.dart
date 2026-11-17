@@ -13,6 +13,8 @@ class CreateBookingRequestModel {
   final String? couponCode;
   final int? pointsRedeemed;
   final String? notes;
+  final String? transactionId;
+  final String? paymentId;
 
   const CreateBookingRequestModel({
     required this.branchId,
@@ -26,6 +28,8 @@ class CreateBookingRequestModel {
     this.couponCode,
     this.pointsRedeemed,
     this.notes,
+    this.transactionId,
+    this.paymentId,
   });
 
   static String normalizePaymentMethod(dynamic method) {
@@ -67,6 +71,8 @@ class CreateBookingRequestModel {
     String? couponCode,
     int? pointsRedeemed,
     String? notes,
+    String? transactionId,
+    String? paymentId,
   }) {
     final dateStr = summary.scheduledDate.date
         .toIso8601String()
@@ -85,6 +91,8 @@ class CreateBookingRequestModel {
       couponCode: couponCode ?? summary.appliedCoupon?.code,
       pointsRedeemed: pointsRedeemed,
       notes: notes ?? summary.specialInstructions,
+      transactionId: transactionId,
+      paymentId: paymentId,
     );
   }
 
@@ -101,6 +109,8 @@ class CreateBookingRequestModel {
     String? couponCode,
     int? pointsRedeemed,
     String? notes,
+    String? transactionId,
+    String? paymentId,
   }) {
     return CreateBookingRequestModel(
       branchId: branchId ?? this.branchId,
@@ -114,11 +124,14 @@ class CreateBookingRequestModel {
       couponCode: couponCode ?? this.couponCode,
       pointsRedeemed: pointsRedeemed ?? this.pointsRedeemed,
       notes: notes ?? this.notes,
+      transactionId: transactionId ?? this.transactionId,
+      paymentId: paymentId ?? this.paymentId,
     );
   }
 
   factory CreateBookingRequestModel.fromJson(Map<String, dynamic> json) {
-    final cartList = json['cartItems'] as List? ?? json['items'] as List? ?? [];
+    final cartList =
+        json['cartItems'] as List? ?? json['items'] as List? ?? [];
     final item = cartList.isNotEmpty && cartList.first is Map
         ? Map<String, dynamic>.from(cartList.first as Map)
         : <String, dynamic>{};
@@ -137,6 +150,8 @@ class CreateBookingRequestModel {
       couponCode: json['couponCode'] as String?,
       pointsRedeemed: (json['pointsRedeemed'] as num?)?.toInt(),
       notes: json['notes'] as String?,
+      transactionId: (json['transactionId'] ?? json['txnId']) as String?,
+      paymentId: json['paymentId'] as String?,
     );
   }
 
@@ -173,6 +188,12 @@ class CreateBookingRequestModel {
       if (pointsRedeemed != null && pointsRedeemed! > 0)
         'pointsRedeemed': pointsRedeemed,
       if (notes != null && notes!.trim().isNotEmpty) 'notes': notes,
+      if (transactionId != null && transactionId!.trim().isNotEmpty) ...{
+        'transactionId': transactionId!.trim(),
+        'txnId': transactionId!.trim(),
+      },
+      if (paymentId != null && paymentId!.trim().isNotEmpty)
+        'paymentId': paymentId!.trim(),
     };
   }
 
@@ -189,7 +210,9 @@ class CreateBookingRequestModel {
           stylistId == other.stylistId &&
           couponCode == other.couponCode &&
           pointsRedeemed == other.pointsRedeemed &&
-          notes == other.notes;
+          notes == other.notes &&
+          transactionId == other.transactionId &&
+          paymentId == other.paymentId;
 
   @override
   int get hashCode => Object.hash(
@@ -203,5 +226,7 @@ class CreateBookingRequestModel {
     couponCode,
     pointsRedeemed,
     notes,
+    transactionId,
+    paymentId,
   );
 }
