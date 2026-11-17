@@ -1,0 +1,447 @@
+import 'package:flutter/material.dart';
+import 'package:prop_crm/core/storage/storage_keys.dart';
+import '../core/constants/app_colors.dart';
+import '../core/constants/app_typography.dart';
+import '../core/constants/route_names.dart';
+import '../core/widgets/app_button.dart';
+import '../core/widgets/custom_app_bar.dart';
+import '../features/auth/presentation/screens/complete_profile_screen.dart';
+import '../features/auth/presentation/screens/forgot_password_screen.dart';
+import '../features/auth/presentation/screens/login_screen.dart';
+import '../features/auth/presentation/screens/mobile_login_screen.dart';
+import '../features/auth/presentation/screens/profile_screen.dart';
+import '../features/auth/presentation/screens/reset_password_screen.dart';
+import '../features/auth/presentation/screens/signup_screen.dart';
+import '../features/auth/presentation/screens/splash_screen.dart';
+import '../features/bookings/data/models/create_booking_response_model.dart';
+import '../features/branches/data/models/branch_model.dart';
+import '../features/branches/presentation/screens/branch_selection_screen.dart';
+import '../features/offers/presentation/screens/offers_screen.dart';
+import '../features/addresses/data/models/address_model.dart';
+import '../features/addresses/presentation/screens/add_address_screen.dart';
+import '../features/addresses/presentation/screens/addresses_screen.dart';
+import '../features/categories/presentation/screens/categories_screen.dart';
+import '../features/home/presentation/screens/home_screen.dart';
+import '../features/home/presentation/screens/main_nav_screen.dart';
+import '../features/services/presentation/screens/service_details_screen.dart';
+import '../features/services/presentation/screens/service_listing_screen.dart';
+import '../features/date_time/presentation/screens/date_time_selection_screen.dart';
+import '../features/date_time/data/models/service_date_model.dart';
+import '../features/date_time/data/models/time_slot_model.dart';
+import '../features/services/data/models/service_model.dart';
+import '../features/services/data/models/service_package_model.dart';
+import '../features/services/data/models/service_products_response.dart';
+import '../features/booking_summary/data/models/booking_summary_model.dart';
+import '../features/booking_summary/presentation/screens/booking_summary_screen.dart';
+import '../features/bookings/data/models/booking_model.dart';
+import '../features/bookings/presentation/screens/booking_confirmation_screen.dart';
+import '../features/bookings/presentation/screens/booking_details_screen.dart';
+import '../features/bookings/presentation/screens/my_bookings_screen.dart';
+import '../features/bookings/presentation/screens/stylist_and_chair_selection_screen.dart';
+import '../features/payment/presentation/screens/payment_screen.dart';
+import '../features/auth/presentation/screens/edit_profile_screen.dart';
+import '../features/branches/presentation/screens/branch_details_screen.dart';
+import '../features/notifications/presentation/screens/notifications_screen.dart';
+import '../features/services/presentation/screens/service_search_screen.dart';
+import '../features/subscriptions/presentation/screens/subscriptions_screen.dart';
+import '../features/loyalty/presentation/screens/loyalty_wallet_screen.dart';
+import '../features/waitlist/presentation/screens/waitlist_screen.dart';
+
+abstract class AppRouter {
+  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case AppRoutes.splash:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SplashScreen(),
+        );
+
+      case AppRoutes.login:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const LoginScreen(),
+        );
+
+      case AppRoutes.signup:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SignupScreen(),
+        );
+
+      case AppRoutes.forgotPassword:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const ForgotPasswordScreen(),
+        );
+
+      case AppRoutes.resetPassword:
+        {
+          final email = settings.arguments as String?;
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => ResetPasswordScreen(
+              email: email,
+              resetToken: StorageKeys.resetToken,
+            ),
+          );
+        }
+
+      case AppRoutes.completeProfile:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const CompleteProfileScreen(),
+        );
+
+      case AppRoutes.mainNav:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const MainNavScreen(),
+        );
+
+      case AppRoutes.home:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const HomeScreen(),
+        );
+
+      case AppRoutes.categories:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const CategoriesScreen(),
+        );
+
+      case AppRoutes.serviceListing:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) =>
+                ServiceListingScreen(category: args!['categoryName']),
+          );
+        }
+
+      case AppRoutes.serviceDetails:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          final serviceId = args?['serviceId'] as String? ?? '';
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => ServiceDetailsScreen(serviceId: serviceId),
+          );
+        }
+
+      case AppRoutes.packageSelection:
+        return _buildPlaceholderRoute(
+          settings: settings,
+          title: 'Package Selection',
+          phaseName: 'Phase 4: Booking Flow',
+        );
+
+      case AppRoutes.branchSelection:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          final isSelectionMode = args?['isSelectionMode'] as bool? ?? true;
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) =>
+                BranchSelectionScreen(isSelectionMode: isSelectionMode),
+          );
+        }
+
+      case AppRoutes.addressSelection:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          final isSelectionMode = args?['isSelectionMode'] as bool? ?? true;
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => AddressesScreen(isSelectionMode: isSelectionMode),
+          );
+        }
+
+      case AppRoutes.addAddress:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          final existingAddress = args?['existingAddress'] as AddressModel?;
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => AddAddressScreen(existingAddress: existingAddress),
+          );
+        }
+
+      case AppRoutes.dateTimeSelection:
+        final args = settings.arguments as Map<String, dynamic>?;
+
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) {
+            debugPrint(
+              "Branch ID I get while navigating : ${args?['branchId']}",
+            );
+            return DateTimeSelectionScreen(
+              serviceId: args?['serviceId'] as String?,
+              serviceName: args?['serviceName'] as String?,
+              packageId: args?['packageId'] as String?,
+              packageName: args?['packageName'] as String?,
+              branchId: args?['branchId'] as String?,
+            );
+          },
+        );
+
+      case AppRoutes.stylistAndChairSelection:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => StylistAndChairSelectionScreen(
+              service: args!['service'] as ServiceModel,
+              package: args['package'] as ServicePackageModel?,
+              branch: args['branch'] as BranchModel?,
+              branchId:
+                  (args['branchId'] ??
+                          (args['branch'] as BranchModel?)?.id ??
+                          '')
+                      .toString(),
+              scheduledDate: args['scheduledDate'] as ServiceDateModel,
+              timeSlot: args['timeSlot'] as TimeSlotModel,
+              productId: args['productId'] as String?,
+              selectedProduct: args['selectedProduct'] as ConsumableProduct?,
+            ),
+          );
+        }
+
+      case AppRoutes.bookingSummary:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => BookingSummaryScreen(
+              service: args?['service'] as ServiceModel?,
+              package: args?['package'] as ServicePackageModel?,
+              address: args?['address'] as AddressModel?,
+              branch: args?['branch'] as BranchModel?,
+              scheduledDate: args?['scheduledDate'] as ServiceDateModel?,
+              timeSlot: args?['timeSlot'] as TimeSlotModel?,
+              initialSummary: args?['bookingSummary'] as BookingSummaryModel?,
+              selectedProduct: args?['selectedProduct'] as ConsumableProduct?,
+              stylistId: args?['stylistId'] as String?,
+              stylistName: args?['stylistName'] as String?,
+              chairNumber: args?['chairNumber'] as String?,
+              productId: args?['productId'] as String?,
+            ),
+          );
+        }
+
+      case AppRoutes.payment:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => PaymentScreen(
+              bookingSummary: args?['bookingSummary'] as BookingSummaryModel?,
+            ),
+          );
+        }
+
+      case AppRoutes.bookingConfirmation:
+        final args = settings.arguments as Map<String, dynamic>?;
+
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => BookingConfirmationScreen(
+            booking: args?['booking'] as CreateBookingResponseModel?,
+          ),
+        );
+
+      case AppRoutes.bookings:
+      case AppRoutes.myBookings:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const MyBookingsScreen(),
+        );
+
+      case AppRoutes.bookingDetails:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          final bookingId = args?['bookingId'] as String? ?? '';
+          final initialBooking = args?['booking'] as BookingModel?;
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => BookingDetailsScreen(
+              bookingId: bookingId,
+              initialBooking: initialBooking,
+            ),
+          );
+        }
+
+      case AppRoutes.profile:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const ProfileScreen(),
+        );
+
+      case AppRoutes.editProfile:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const EditProfileScreen(),
+        );
+
+      case AppRoutes.serviceSearch:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const ServiceSearchScreen(),
+        );
+
+      case AppRoutes.branchDetails:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          final branch =
+              args?['branch'] as BranchModel? ??
+              const BranchModel(
+                id: 'branch-1',
+                name: 'Downtown Luxury Lounge',
+                address: '104 Royal Palms, Downtown Luxury Avenue, Mumbai',
+                phone: '+91 98765 43210',
+                openingTime: '09:00',
+                closingTime: '21:00',
+                isActive: true,
+              );
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => BranchDetailsScreen(branch: branch),
+          );
+        }
+      case AppRoutes.subscriptions:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SubscriptionsScreen(),
+        );
+
+      case AppRoutes.loyaltyWallet:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const LoyaltyWalletScreen(),
+        );
+
+      case AppRoutes.waitlist:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const WaitlistScreen(),
+        );
+
+      case AppRoutes.notifications:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const NotificationsScreen(),
+        );
+
+      case AppRoutes.reviews:
+      case AppRoutes.addReview:
+        return _buildPlaceholderRoute(
+          settings: settings,
+          title: 'Reviews',
+          phaseName: 'Phase 7: Profile & Reviews',
+        );
+
+      case AppRoutes.offers:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const OffersScreen(),
+        );
+
+      default:
+        return _buildNotFoundRoute(settings);
+    }
+  }
+
+  static MaterialPageRoute _buildPlaceholderRoute({
+    required RouteSettings settings,
+    required String title,
+    required String phaseName,
+  }) {
+    return MaterialPageRoute(
+      settings: settings,
+      builder: (context) => Scaffold(
+        appBar: CustomAppBar(title: title),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.construction_rounded,
+                  size: 56,
+                  color: AppColors.primary,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  title,
+                  style: AppTypography.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Scheduled for $phaseName',
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                AppButton(
+                  text: 'Back',
+                  isFullWidth: false,
+                  variant: AppButtonVariant.secondary,
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  static MaterialPageRoute _buildNotFoundRoute(RouteSettings settings) {
+    return MaterialPageRoute(
+      settings: settings,
+      builder: (context) => Scaffold(
+        appBar: const CustomAppBar(title: 'Page Not Found'),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.error_outline_rounded,
+                  size: 56,
+                  color: AppColors.error,
+                ),
+                const SizedBox(height: 16),
+                Text('404 - Not Found', style: AppTypography.titleLarge),
+                const SizedBox(height: 8),
+                Text(
+                  'Route "${settings.name}" does not exist.',
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                AppButton(
+                  text: 'Return Home',
+                  isFullWidth: false,
+                  onPressed: () => Navigator.of(
+                    context,
+                  ).pushReplacementNamed(AppRoutes.splash),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
