@@ -518,198 +518,198 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
   }
 }
 
-class MockBookingRemoteDataSource implements BookingRemoteDataSource {
-  bool shouldFail;
-  final List<BookingModel> _bookings = [];
+// class MockBookingRemoteDataSource implements BookingRemoteDataSource {
+//   bool shouldFail;
+//   final List<BookingModel> _bookings = [];
 
-  MockBookingRemoteDataSource({this.shouldFail = false}) {
-    _seedDeterministicBookings();
-  }
+//   MockBookingRemoteDataSource({this.shouldFail = false}) {
+//     _seedDeterministicBookings();
+//   }
 
-  void _seedDeterministicBookings() {
-    _bookings.add(
-      BookingModel(
-        id: 'bk_seed_001',
-        bookingReference: 'LX-2026-0042',
-        status: BookingStatus.confirmed,
-        service: const ServiceModel(
-          id: 'srv_exec_haircut',
-          categoryId: 'cat_hair_styling',
-          name: 'Executive Haircut & Styling',
-          description:
-              'Precision scissor or clipper haircut customized to your face profile with scalp therapy wash.',
-          startingPrice: 499.0,
-          duration: '45 mins',
-        ),
-        package: const ServicePackageModel(
-          id: 'pkg_exec_std',
-          serviceId: 'srv_exec_haircut',
-          name: 'Classic Executive',
-          description: 'Haircut + quick rinse & blowdry',
-          price: 499.0,
-          duration: '45 mins',
-          features: ['Haircut', 'Scalp Massage', 'Blowdry'],
-        ),
-        address: const AddressModel(
-          id: 'addr_001',
-          userId: 'usr_001',
-          label: 'Salon Branch',
-          houseNumber: '',
-          addressLine: 'MI Road, Panch Batti',
-          city: 'Jaipur',
-          state: 'Rajasthan',
-          pincode: '302001',
-        ),
-        scheduledDate: ServiceDateModel(
-          date: DateTime.now().add(const Duration(days: 2)),
-        ),
-        timeSlot: const TimeSlotModel(
-          id: 'slot_1000',
-          startTime: '10:00 AM',
-          endTime: '11:00 AM',
-        ),
-        paymentMethod: const PaymentMethodModel(
-          id: 'pay_upi_gpay',
-          title: 'Google Pay',
-          subtitle: 'UPI ID: user@okhdfcbank',
-          type: PaymentMethodType.upi,
-        ),
-        pricing: const PricingBreakdown(
-          packagePrice: 499.0,
-          discount: 0.0,
-          taxRate: 0.0,
-          taxAmount: 0.0,
-          totalAmount: 499.0,
-        ),
-        createdAt: DateTime.now().subtract(const Duration(hours: 12)),
-      ),
-    );
-  }
+//   void _seedDeterministicBookings() {
+//     _bookings.add(
+//       BookingModel(
+//         id: 'bk_seed_001',
+//         bookingReference: 'LX-2026-0042',
+//         status: BookingStatus.confirmed,
+//         service: const ServiceModel(
+//           id: 'srv_exec_haircut',
+//           categoryId: 'cat_hair_styling',
+//           name: 'Executive Haircut & Styling',
+//           description:
+//               'Precision scissor or clipper haircut customized to your face profile with scalp therapy wash.',
+//           startingPrice: 499.0,
+//           duration: '45 mins',
+//         ),
+//         package: const ServicePackageModel(
+//           id: 'pkg_exec_std',
+//           serviceId: 'srv_exec_haircut',
+//           name: 'Classic Executive',
+//           description: 'Haircut + quick rinse & blowdry',
+//           price: 499.0,
+//           duration: '45 mins',
+//           features: ['Haircut', 'Scalp Massage', 'Blowdry'],
+//         ),
+//         address: const AddressModel(
+//           id: 'addr_001',
+//           userId: 'usr_001',
+//           label: 'Salon Branch',
+//           houseNumber: '',
+//           addressLine: 'MI Road, Panch Batti',
+//           city: 'Jaipur',
+//           state: 'Rajasthan',
+//           pincode: '302001',
+//         ),
+//         scheduledDate: ServiceDateModel(
+//           date: DateTime.now().add(const Duration(days: 2)),
+//         ),
+//         timeSlot: const TimeSlotModel(
+//           id: 'slot_1000',
+//           startTime: '10:00 AM',
+//           endTime: '11:00 AM',
+//         ),
+//         paymentMethod: const PaymentMethodModel(
+//           id: 'pay_upi_gpay',
+//           title: 'Google Pay',
+//           subtitle: 'UPI ID: user@okhdfcbank',
+//           type: PaymentMethodType.upi,
+//         ),
+//         pricing: const PricingBreakdown(
+//           packagePrice: 499.0,
+//           discount: 0.0,
+//           taxRate: 0.0,
+//           taxAmount: 0.0,
+//           totalAmount: 499.0,
+//         ),
+//         createdAt: DateTime.now().subtract(const Duration(hours: 12)),
+//       ),
+//     );
+//   }
 
-  @override
-  Future<List<BookingModel>> getBookings({String? status}) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    if (shouldFail) {
-      throw const UnexpectedException(
-        message: "Couldn't load your bookings. Please try again.",
-      );
-    }
-    if (status != null && status.isNotEmpty && status != 'all') {
-      return _bookings
-          .where((b) => b.status.name.toLowerCase() == status.toLowerCase())
-          .toList();
-    }
-    return List<BookingModel>.from(_bookings);
-  }
+//   @override
+//   Future<List<BookingModel>> getBookings({String? status}) async {
+//     await Future.delayed(const Duration(milliseconds: 150));
+//     if (shouldFail) {
+//       throw const UnexpectedException(
+//         message: "Couldn't load your bookings. Please try again.",
+//       );
+//     }
+//     if (status != null && status.isNotEmpty && status != 'all') {
+//       return _bookings
+//           .where((b) => b.status.name.toLowerCase() == status.toLowerCase())
+//           .toList();
+//     }
+//     return List<BookingModel>.from(_bookings);
+//   }
 
-  @override
-  Future<BookingModel> getBookingById(String bookingId) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    if (shouldFail) {
-      throw const UnexpectedException(
-        message: "Couldn't load booking details. Please try again.",
-      );
-    }
+//   @override
+//   Future<BookingModel> getBookingById(String bookingId) async {
+//     await Future.delayed(const Duration(milliseconds: 100));
+//     if (shouldFail) {
+//       throw const UnexpectedException(
+//         message: "Couldn't load booking details. Please try again.",
+//       );
+//     }
 
-    final match = _bookings
-        .where((b) => b.id == bookingId || b.bookingReference == bookingId)
-        .firstOrNull;
+//     final match = _bookings
+//         .where((b) => b.id == bookingId || b.bookingReference == bookingId)
+//         .firstOrNull;
 
-    if (match != null) return match;
-    throw const NotFoundException(message: 'Booking not found');
-  }
+//     if (match != null) return match;
+//     throw const NotFoundException(message: 'Booking not found');
+//   }
 
-  @override
-  Future<CreateBookingResponseModel> createBooking({
-    required CreateBookingRequestModel request,
-    BookingSummaryModel? summary,
-    PaymentMethodModel? paymentMethod,
-  }) async {
-    throw UnimplementedError('Mock booking creation is not implemented.');
-  }
+//   @override
+//   Future<CreateBookingResponseModel> createBooking({
+//     required CreateBookingRequestModel request,
+//     BookingSummaryModel? summary,
+//     PaymentMethodModel? paymentMethod,
+//   }) async {
+//     throw UnimplementedError('Mock booking creation is not implemented.');
+//   }
 
-  @override
-  Future<CancelBookingResponseModel> cancelBookingAppointment({
-    required String bookingId,
-    String? reason,
-  }) async {
-    return const CancelBookingResponseModel(
-      success: true,
-      message: 'Appointment cancelled successfully.',
-      refundAmount: 0.0,
-      pointsRestored: 0,
-    );
-  }
+//   @override
+//   Future<CancelBookingResponseModel> cancelBookingAppointment({
+//     required String bookingId,
+//     String? reason,
+//   }) async {
+//     return const CancelBookingResponseModel(
+//       success: true,
+//       message: 'Appointment cancelled successfully.',
+//       refundAmount: 0.0,
+//       pointsRestored: 0,
+//     );
+//   }
 
-  @override
-  Future<BookingModel> cancelBooking({
-    CancelBookingRequestModel? request,
-    String? bookingId,
-    String? reason,
-    String? reasonNote,
-  }) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    final effectiveBookingId = request?.bookingId ?? bookingId ?? '';
-    final index = _bookings.indexWhere(
-      (b) =>
-          b.id == effectiveBookingId ||
-          b.bookingReference == effectiveBookingId,
-    );
-    if (index == -1) {
-      throw const NotFoundException(message: 'Booking not found.');
-    }
-    final existingBooking = _bookings[index];
-    final updatedBooking = existingBooking.copyWith(
-      status: BookingStatus.cancelled,
-      cancellationReason: request?.reason ?? reason ?? '',
-      cancellationNote: request?.reasonNote ?? reasonNote,
-      cancelledAt: DateTime.now(),
-    );
-    _bookings[index] = updatedBooking;
-    return updatedBooking;
-  }
+//   @override
+//   Future<BookingModel> cancelBooking({
+//     CancelBookingRequestModel? request,
+//     String? bookingId,
+//     String? reason,
+//     String? reasonNote,
+//   }) async {
+//     await Future.delayed(const Duration(milliseconds: 150));
+//     final effectiveBookingId = request?.bookingId ?? bookingId ?? '';
+//     final index = _bookings.indexWhere(
+//       (b) =>
+//           b.id == effectiveBookingId ||
+//           b.bookingReference == effectiveBookingId,
+//     );
+//     if (index == -1) {
+//       throw const NotFoundException(message: 'Booking not found.');
+//     }
+//     final existingBooking = _bookings[index];
+//     final updatedBooking = existingBooking.copyWith(
+//       status: BookingStatus.cancelled,
+//       cancellationReason: request?.reason ?? reason ?? '',
+//       cancellationNote: request?.reasonNote ?? reasonNote,
+//       cancelledAt: DateTime.now(),
+//     );
+//     _bookings[index] = updatedBooking;
+//     return updatedBooking;
+//   }
 
-  @override
-  Future<RescheduleBookingResponseModel> rescheduleBooking({
-    required String bookingId,
-    required String date,
-    required String timeSlot,
-    String? reason,
-  }) async {
-    return RescheduleBookingResponseModel(
-      success: true,
-      message: 'Appointment rescheduled successfully',
-      date: date,
-      timeSlot: timeSlot,
-    );
-  }
+//   @override
+//   Future<RescheduleBookingResponseModel> rescheduleBooking({
+//     required String bookingId,
+//     required String date,
+//     required String timeSlot,
+//     String? reason,
+//   }) async {
+//     return RescheduleBookingResponseModel(
+//       success: true,
+//       message: 'Appointment rescheduled successfully',
+//       date: date,
+//       timeSlot: timeSlot,
+//     );
+//   }
 
-  @override
-  Future<bool> submitReview({
-    required String bookingId,
-    required int rating,
-    String? comment,
-  }) async {
-    return true;
-  }
+//   @override
+//   Future<bool> submitReview({
+//     required String bookingId,
+//     required int rating,
+//     String? comment,
+//   }) async {
+//     return true;
+//   }
 
-  @override
-  Future<BookingPricingResponseModel> calculatePricing({
-    required String branchId,
-    String? date,
-    String? timeSlot,
-    required List<Map<String, dynamic>> items,
-    String? couponCode,
-    bool? useLoyaltyPoints,
-    int? pointsToRedeem,
-  }) async {
-    return const BookingPricingResponseModel(
-      items: [],
-      subtotal: 500,
-      discount: 0,
-      tax: 0,
-      total: 500,
-      totalDurationMinutes: 45,
-    );
-  }
-}
+//   @override
+//   Future<BookingPricingResponseModel> calculatePricing({
+//     required String branchId,
+//     String? date,
+//     String? timeSlot,
+//     required List<Map<String, dynamic>> items,
+//     String? couponCode,
+//     bool? useLoyaltyPoints,
+//     int? pointsToRedeem,
+//   }) async {
+//     return const BookingPricingResponseModel(
+//       items: [],
+//       subtotal: 500,
+//       discount: 0,
+//       tax: 0,
+//       total: 500,
+//       totalDurationMinutes: 45,
+//     );
+//   }
+// }

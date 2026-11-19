@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/constants/route_names.dart';
-import '../../../../core/utilities/formatters.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_network_image.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -94,63 +93,63 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   // Popular Services
-  final List<Map<String, dynamic>> _popularServices = [
-    {
-      'id': 'srv_exec_haircut',
-      'name': 'Executive Haircut & Styling',
-      'price': 499.0,
-      'duration': '45 mins',
-      'rating': 4.9,
-      'reviews': 380,
-      'image':
-          'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600',
-      'category': 'Hair',
-    },
-    {
-      'id': 'srv_women_haircut',
-      'name': 'Signature Cut & Blow Dry',
-      'price': 899.0,
-      'duration': '60 mins',
-      'rating': 4.8,
-      'reviews': 295,
-      'image':
-          'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600',
-      'category': 'Hair',
-    },
-    {
-      'id': 'srv_hydra_facial',
-      'name': 'Hydra Medi-Facial & Glow',
-      'price': 1799.0,
-      'duration': '60 mins',
-      'rating': 4.9,
-      'reviews': 510,
-      'image':
-          'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600',
-      'category': 'Skin',
-    },
-    {
-      'id': 'srv_moroccan_spa',
-      'name': 'Moroccan Argan Hair Spa',
-      'price': 1299.0,
-      'duration': '60 mins',
-      'rating': 4.8,
-      'reviews': 240,
-      'image':
-          'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600',
-      'category': 'Spa',
-    },
-    {
-      'id': 'srv_gel_mani_pedi',
-      'name': 'Luxury Gel Mani & Pedi',
-      'price': 1499.0,
-      'duration': '75 mins',
-      'rating': 4.8,
-      'reviews': 190,
-      'image':
-          'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=600',
-      'category': 'Nails',
-    },
-  ];
+  // final List<Map<String, dynamic>> _popularServices = [
+  //   {
+  //     'id': 'srv_exec_haircut',
+  //     'name': 'Executive Haircut & Styling',
+  //     'price': 499.0,
+  //     'duration': '45 mins',
+  //     'rating': 4.9,
+  //     'reviews': 380,
+  //     'image':
+  //         'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600',
+  //     'category': 'Hair',
+  //   },
+  //   {
+  //     'id': 'srv_women_haircut',
+  //     'name': 'Signature Cut & Blow Dry',
+  //     'price': 899.0,
+  //     'duration': '60 mins',
+  //     'rating': 4.8,
+  //     'reviews': 295,
+  //     'image':
+  //         'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600',
+  //     'category': 'Hair',
+  //   },
+  //   {
+  //     'id': 'srv_hydra_facial',
+  //     'name': 'Hydra Medi-Facial & Glow',
+  //     'price': 1799.0,
+  //     'duration': '60 mins',
+  //     'rating': 4.9,
+  //     'reviews': 510,
+  //     'image':
+  //         'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600',
+  //     'category': 'Skin',
+  //   },
+  //   {
+  //     'id': 'srv_moroccan_spa',
+  //     'name': 'Moroccan Argan Hair Spa',
+  //     'price': 1299.0,
+  //     'duration': '60 mins',
+  //     'rating': 4.8,
+  //     'reviews': 240,
+  //     'image':
+  //         'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600',
+  //     'category': 'Spa',
+  //   },
+  //   {
+  //     'id': 'srv_gel_mani_pedi',
+  //     'name': 'Luxury Gel Mani & Pedi',
+  //     'price': 1499.0,
+  //     'duration': '75 mins',
+  //     'rating': 4.8,
+  //     'reviews': 190,
+  //     'image':
+  //         'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=600',
+  //     'category': 'Nails',
+  //   },
+  // ];
 
   @override
   void initState() {
@@ -508,56 +507,56 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             // 6. Popular Services
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 28, 20, 14),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Popular Salon Services',
-                      style: AppTypography.titleLarge.copyWith(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 18,
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          AppRoutes.serviceListing,
-                          arguments: {'categoryName': 'Haircut & Styling'},
-                        );
-                      },
-                      child: Text(
-                        'View All',
-                        style: AppTypography.labelSmall.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 250,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: _popularServices.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(width: 14),
-                  itemBuilder: (context, index) {
-                    final service = _popularServices[index];
-                    return _buildPopularServiceCard(service);
-                  },
-                ),
-              ),
-            ),
+            // SliverToBoxAdapter(
+            //   child: Padding(
+            //     padding: const EdgeInsets.fromLTRB(20, 28, 20, 14),
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: [
+            //         Text(
+            //           'Popular Salon Services',
+            //           style: AppTypography.titleLarge.copyWith(
+            //             fontWeight: FontWeight.w800,
+            //             fontSize: 18,
+            //           ),
+            //         ),
+            //         InkWell(
+            //           onTap: () {
+            //             Navigator.pushNamed(
+            //               context,
+            //               AppRoutes.serviceListing,
+            //               arguments: {'categoryName': 'Haircut & Styling'},
+            //             );
+            //           },
+            //           child: Text(
+            //             'View All',
+            //             style: AppTypography.labelSmall.copyWith(
+            //               color: AppColors.primary,
+            //               fontWeight: FontWeight.w700,
+            //             ),
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            // SliverToBoxAdapter(
+            //   child: SizedBox(
+            //     height: 250,
+            //     child: ListView.separated(
+            //       scrollDirection: Axis.horizontal,
+            //       physics: const BouncingScrollPhysics(),
+            //       padding: const EdgeInsets.symmetric(horizontal: 20),
+            //       itemCount: _popularServices.length,
+            //       separatorBuilder: (context, index) =>
+            //           const SizedBox(width: 14),
+            //       itemBuilder: (context, index) {
+            //         final service = _popularServices[index];
+            //         return _buildPopularServiceCard(service);
+            //       },
+            //     ),
+            //   ),
+            // ),
 
             // 7. Branches Section
             SliverToBoxAdapter(
@@ -904,145 +903,145 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPopularServiceCard(Map<String, dynamic> service) {
-    return Container(
-      width: 170,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.shadow,
-            offset: Offset(0, 2),
-            blurRadius: 8,
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              AppRoutes.serviceDetails,
-              arguments: {'serviceId': service['id']},
-            );
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(15),
-                ),
-                child: Stack(
-                  children: [
-                    AppNetworkImage(
-                      imageUrl: service['image'],
-                      height: 115,
-                      width: 170,
-                      fit: BoxFit.cover,
-                    ),
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface.withValues(alpha: 0.9),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.star_rounded,
-                              size: 12,
-                              color: AppColors.warning,
-                            ),
-                            const SizedBox(width: 2),
-                            Text(
-                              service['rating'].toString(),
-                              style: AppTypography.labelSmall.copyWith(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 10,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      service['name'],
-                      style: AppTypography.titleSmall.copyWith(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 12,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      service['duration'],
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textTertiary,
-                        fontSize: 10,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          AppFormatters.formatCurrency(service['price']),
-                          style: AppTypography.priceMedium.copyWith(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            'Book',
-                            style: AppTypography.labelSmall.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _buildPopularServiceCard(Map<String, dynamic> service) {
+  //   return Container(
+  //     width: 170,
+  //     decoration: BoxDecoration(
+  //       color: AppColors.surface,
+  //       borderRadius: BorderRadius.circular(16),
+  //       border: Border.all(color: AppColors.border),
+  //       boxShadow: const [
+  //         BoxShadow(
+  //           color: AppColors.shadow,
+  //           offset: Offset(0, 2),
+  //           blurRadius: 8,
+  //         ),
+  //       ],
+  //     ),
+  //     child: Material(
+  //       color: Colors.transparent,
+  //       borderRadius: BorderRadius.circular(16),
+  //       child: InkWell(
+  //         borderRadius: BorderRadius.circular(16),
+  //         onTap: () {
+  //           Navigator.pushNamed(
+  //             context,
+  //             AppRoutes.serviceDetails,
+  //             arguments: {'serviceId': service['id']},
+  //           );
+  //         },
+  //         child: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             ClipRRect(
+  //               borderRadius: const BorderRadius.vertical(
+  //                 top: Radius.circular(15),
+  //               ),
+  //               child: Stack(
+  //                 children: [
+  //                   AppNetworkImage(
+  //                     imageUrl: service['image'],
+  //                     height: 115,
+  //                     width: 170,
+  //                     fit: BoxFit.cover,
+  //                   ),
+  //                   Positioned(
+  //                     top: 8,
+  //                     right: 8,
+  //                     child: Container(
+  //                       padding: const EdgeInsets.symmetric(
+  //                         horizontal: 6,
+  //                         vertical: 2,
+  //                       ),
+  //                       decoration: BoxDecoration(
+  //                         color: AppColors.surface.withValues(alpha: 0.9),
+  //                         borderRadius: BorderRadius.circular(10),
+  //                       ),
+  //                       child: Row(
+  //                         mainAxisSize: MainAxisSize.min,
+  //                         children: [
+  //                           const Icon(
+  //                             Icons.star_rounded,
+  //                             size: 12,
+  //                             color: AppColors.warning,
+  //                           ),
+  //                           const SizedBox(width: 2),
+  //                           Text(
+  //                             service['rating'].toString(),
+  //                             style: AppTypography.labelSmall.copyWith(
+  //                               fontWeight: FontWeight.w700,
+  //                               fontSize: 10,
+  //                             ),
+  //                           ),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //             Padding(
+  //               padding: const EdgeInsets.all(10.0),
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: [
+  //                   Text(
+  //                     service['name'],
+  //                     style: AppTypography.titleSmall.copyWith(
+  //                       fontWeight: FontWeight.w700,
+  //                       fontSize: 12,
+  //                     ),
+  //                     maxLines: 2,
+  //                     overflow: TextOverflow.ellipsis,
+  //                   ),
+  //                   const SizedBox(height: 4),
+  //                   Text(
+  //                     service['duration'],
+  //                     style: AppTypography.bodySmall.copyWith(
+  //                       color: AppColors.textTertiary,
+  //                       fontSize: 10,
+  //                     ),
+  //                   ),
+  //                   const SizedBox(height: 8),
+  //                   Row(
+  //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                     children: [
+  //                       Text(
+  //                         AppFormatters.formatCurrency(service['price']),
+  //                         style: AppTypography.priceMedium.copyWith(
+  //                           fontSize: 14,
+  //                           fontWeight: FontWeight.w800,
+  //                         ),
+  //                       ),
+  //                       Container(
+  //                         padding: const EdgeInsets.symmetric(
+  //                           horizontal: 8,
+  //                           vertical: 3,
+  //                         ),
+  //                         decoration: BoxDecoration(
+  //                           color: AppColors.primary,
+  //                           borderRadius: BorderRadius.circular(8),
+  //                         ),
+  //                         child: Text(
+  //                           'Book',
+  //                           style: AppTypography.labelSmall.copyWith(
+  //                             color: Colors.white,
+  //                             fontWeight: FontWeight.w700,
+  //                             fontSize: 10,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildBranchHomeCard(BranchModel branch) {
     return Container(
